@@ -115,7 +115,7 @@ function ENT:Mount(pl)
 		pl:AddEffects(EF_BONEMERGE)
 	else
 		local pos = self:GetPos()
-		pl:SetPos(pos +self:GetUp() *40 +self:GetForward() *6)
+		pl:SetPos(pos +self:GetUp() *75 +self:GetForward() *6)
 		pl:SetParent(self)
 		pl:Fire("SetParentAttachmentMaintainOffset","mount",0)
 	end

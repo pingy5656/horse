@@ -116,15 +116,9 @@ function ENT:Mount(pl)
 	else
     	-- Model Position
     	local pos = self:GetPos()
-    	pl:SetPos(pos + self:GetUp() * 1000 + self:GetForward() * 10)
-
-    	-- Parent the player to the horse using an attachment
-    	pl:SetParent(self)
-    	pl:SetParentAttachment("anim_attachment_RH", 0)  -- "anim_attachment_RH" is a common root bone, but this might need to be adjusted based on the horse model
-
-    	-- Adjust Model's Tilt
-    	local tiltAngle = Angle(20, 0, 0)  -- Adjust the pitch value for the desired tilt
-    	pl:SetAngles(tiltAngle)
+    	pl:SetPos(pos + self:GetUp() * 65 + self:GetForward() * 20)
+		pl:SetParent(self)
+    	pl:Fire("SetParentAttachmentMaintainOffset", "mount", 0)
 
     	-- View Position
     	local viewOffset = Vector(0, 0, 60)  -- Adjust this vector for the desired view position

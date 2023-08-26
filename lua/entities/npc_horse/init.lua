@@ -8,7 +8,7 @@ ENT.NPCFaction = NPC_FACTION_PLAYER
 ENT.iClass = CLASS_PLAYER_ALLY
 util.AddNPCClassAlly(CLASS_PLAYER_ALLY,"npc_horse")
 ENT.sModel = "models/skyrim/horse.mdl"
-ENT.fMeleeDistance	= 60
+ENT.fMeleeDistance    = 60
 ENT.fSearchDistance = 600
 ENT.bFlinchOnDamage = false
 ENT.m_bKnockDownable = true
@@ -26,58 +26,71 @@ ENT.iBloodType = BLOOD_COLOR_RED
 ENT.sSoundDir = "npc/horse/"
 
 local tbSounds = {
-	["Attack"] = "horse_attack0[1-2].mp3",
-	["Death"] = "horse_death0[1-2].mp3",
-	["Dismount"] = "horse_dismount01.mp3",
-	["Graze"] = "horse_idle_graze0[1-3].mp3",
-	["Idle"] = {"horse_idle_head01_a0[1-3].mp3","horse_idle_head01_b0[1-3].mp3"},
-	["HeadShake"] = "horse_idle_headshake0[1-2].mp3",
-	["Paw"] = "horse_idle_paw01.mp3",
-	["Tail"] = "horse_idle_tail0[1-3].mp3",
-	["Pain"] = "horse_injured0[1-3].mp3",
-	["Mount"] = "horse_mount01.mp3",
-	["RearUp"] = "horse_rearup0[1-3].mp3",
-	["FootWalkFront"] = "foot/horse_walk_front0[1-6].mp3",
-	["FootWalkBack"] = "foot/horse_walk_back0[1-6].mp3",
-	["FootSprintFront"] = "foot/horse_sprint_front0[1-6].mp3",
-	["FootSprintBack"] = "foot/horse_sprint_back0[1-6].mp3"
+    ["Attack"] = "horse_attack0[1-2].mp3",
+    ["Death"] = "horse_death0[1-2].mp3",
+    ["Dismount"] = "horse_dismount01.mp3",
+    ["Graze"] = "horse_idle_graze0[1-3].mp3",
+    ["Idle"] = {"horse_idle_head01_a0[1-3].mp3","horse_idle_head01_b0[1-3].mp3"},
+    ["HeadShake"] = "horse_idle_headshake0[1-2].mp3",
+    ["Paw"] = "horse_idle_paw01.mp3",
+    ["Tail"] = "horse_idle_tail0[1-3].mp3",
+    ["Pain"] = "horse_injured0[1-3].mp3",
+    ["Mount"] = "horse_mount01.mp3",
+    ["RearUp"] = "horse_rearup0[1-3].mp3",
+    ["FootWalkFront"] = "foot/horse_walk_front0[1-6].mp3",
+    ["FootWalkBack"] = "foot/horse_walk_back0[1-6].mp3",
+    ["FootSprintFront"] = "foot/horse_sprint_front0[1-6].mp3",
+    ["FootSprintBack"] = "foot/horse_sprint_back0[1-6].mp3"
 }
 
 function ENT:GetSoundEvents() return tbSounds end
 
 function ENT:OnInit()
-	self:SetHullType(HULL_WIDE_SHORT)
-	self:SetHullSizeNormal()
-	self:SetCollisionBounds(self.CollisionBounds,Vector(self.CollisionBounds.x *-1,self.CollisionBounds.y *-1,0))
-	
-	self:CapabilitiesAdd(CAP_MOVE_GROUND)
-	self:SetHealth(GetConVarNumber("sk_" .. self.skName .. "_health"))
-	self.m_bMounted = false
-	
-	self.m_exhaustion = 0
-	local cspLoop = CreateSound(self,self.sSoundDir .. "horse_breathe0" .. math.random(1,2) .. "_lp.wav")
-	cspLoop:SetSoundLevel(58)
-	cspLoop:Play()
-	self.cspBreathe = cspLoop
-	self:StopSoundOnDeath(cspLoop)
-	self:SetSkin(math.random(1,4))
-	self:SetUseType(SIMPLE_USE)
+    self:SetHullType(HULL_WIDE_SHORT)
+    self:SetHullSizeNormal()
+    self:SetCollisionBounds(self.CollisionBounds,Vector(self.CollisionBounds.x *-1,self.CollisionBounds.y *-1,0))
+    
+    self:CapabilitiesAdd(CAP_MOVE_GROUND)
+    self:SetHealth(GetConVarNumber("sk_" .. self.skName .. "_health"))
+    self.m_bMounted = false
+    
+    self.m_exhaustion = 0
+    local cspLoop = CreateSound(self,self.sSoundDir .. "horse_breathe0" .. math.random(1,2) .. "_lp.wav")
+    cspLoop:SetSoundLevel(58)
+    cspLoop:Play()
+    self.cspBreathe = cspLoop
+    self:StopSoundOnDeath(cspLoop)
+    self:SetSkin(math.random(1,4))
+    self:SetUseType(SIMPLE_USE)
 end
 
 function ENT:OnUse(activator,caller,type,value)
-	if(self:Disposition(activator) == D_LI) then
-		if(!GAMEMODE.Aftermath) then self:Mount(activator)
-		else
-			activator:HolsterWeapon(function()
-				if(activator:Alive() && self:OBBDistance(activator) <= 60) then
-					self:Mount(activator)
-				end
-			end)
-		end
-	end
+    print("OnUse function called")
+    print("self.m_bMounted:", self.m_bMounted)
+    print("activator == self:GetOwner():", activator == self:GetOwner())
+    -- If the player is already mounted on this horse, dismount them
+    if self.m_bMounted and activator == self:GetOwner() then
+        self:Dismount()
+        return
+    end
+
+    -- If the player is not mounted and is trying to mount the horse
+    if(self:Disposition(activator) == D_LI) then
+        if(!GAMEMODE.Aftermath) then 
+            self:Mount(activator)
+        else
+            activator:HolsterWeapon(function()
+                if(activator:Alive() && self:OBBDistance(activator) <= 60) then
+                    self:Mount(activator)
+                end
+            end)
+        end
+    end
 end
 
+
 function ENT:Mount(pl)
+	print("Mount function called")  -- Debug print statement
 	if(self:IsMounted() || !pl:Alive()) then return end
 	if(gamemode.Call("CanPlayerMount",pl,self) == true) then return end
 	self:PlaySound("Mount")
@@ -112,6 +125,7 @@ function ENT:Mount(pl)
 end
 
 function ENT:Dismount()
+	print("Dismount function called")  -- Debug print statement
 	if(!self:IsMounted()) then return end
 	if(GAMEMODE.Aftermath) then hook.Remove("CanPlayerEquip","horsenoequip" .. self:EntIndex()) end
 	local pl = self:GetOwner()

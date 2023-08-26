@@ -114,10 +114,21 @@ function ENT:Mount(pl)
 		pl:Fire("SetParentAttachment","mount",0)
 		pl:AddEffects(EF_BONEMERGE)
 	else
-		local pos = self:GetPos()
-		pl:SetPos(pos +self:GetUp() *75 +self:GetForward() *6)
-		pl:SetParent(self)
-		pl:Fire("SetParentAttachmentMaintainOffset","mount",0)
+    	-- Model Position
+    	local pos = self:GetPos()
+    	pl:SetPos(pos + self:GetUp() * 1000 + self:GetForward() * 10)
+
+    	-- Parent the player to the horse using an attachment
+    	pl:SetParent(self)
+    	pl:SetParentAttachment("anim_attachment_RH", 0)  -- "anim_attachment_RH" is a common root bone, but this might need to be adjusted based on the horse model
+
+    	-- Adjust Model's Tilt
+    	local tiltAngle = Angle(20, 0, 0)  -- Adjust the pitch value for the desired tilt
+    	pl:SetAngles(tiltAngle)
+
+    	-- View Position
+    	local viewOffset = Vector(0, 0, 60)  -- Adjust this vector for the desired view position
+    	pl:SetViewOffset(viewOffset)
 	end
 end
 
@@ -159,6 +170,8 @@ function ENT:Dismount()
 		pl:DrawWorldModel(true)
 		//pl:SetMoveType(MOVETYPE_OBSERVER)
 		pl:SetMoveType(MOVETYPE_WALK)
+		pl:SetViewOffset(Vector(0, 0, 64))         -- Default view offset for standing player
+		pl:SetViewOffsetDucked(Vector(0, 0, 28))  -- Default view offset for ducked (crouched) player
 		if(pl:Alive()) then
 			local ang = self:GetAngles()
 			ang.r = 0

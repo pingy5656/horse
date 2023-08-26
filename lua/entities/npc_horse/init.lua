@@ -65,10 +65,6 @@ function ENT:OnInit()
 end
 
 function ENT:OnUse(activator,caller,type,value)
-    print("OnUse function called")
-    print("self.m_bMounted:", self.m_bMounted)
-    print("activator == self:GetOwner():", activator == self:GetOwner())
-    -- If the player is already mounted on this horse, dismount them
     if self.m_bMounted and activator == self:GetOwner() then
         self:Dismount()
         return
@@ -100,6 +96,7 @@ function ENT:Mount(pl)
 	if(!owner:IsValid()) then self:SetNetworkedEntity("plOwner",pl) end
 	self:SetNetworkedEntity("mount",pl)
 	self:SetNetworkedBool("mounted",true)
+	self.m_bMounted = true
 	self.m_turnSpeed = 0
 	self.m_tMounted = CurTime()
 	pl:SetNetworkedEntity("mount",self)
@@ -174,6 +171,7 @@ function ENT:Dismount()
 		end
 	end
 	self.m_tMounted = nil
+	self.m_bMounted = false
 	self.bInSchedule = nil
 	self:SetBodygroup(1,0)
 	self:SetNetworkedBool("mounted",false)

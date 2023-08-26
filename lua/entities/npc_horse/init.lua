@@ -116,9 +116,9 @@ function ENT:Mount(pl)
 	else
     	-- Model Position
     	local pos = self:GetPos()
-    	pl:SetPos(pos + self:GetUp() * 65 + self:GetForward() * 20)
+    	pl:SetPos(pos + self:GetUp() * 70 + self:GetForward() * 20)
 		pl:SetParent(self)
-    	pl:Fire("SetParentAttachmentMaintainOffset", "mount", 0)
+		pl:Fire("SetParentAttachmentMaintainOffset", "mount", 0)
 
     	-- View Position
     	local viewOffset = Vector(0, 0, 60)  -- Adjust this vector for the desired view position

@@ -97,7 +97,7 @@ function ENT:Mount(pl)
 	self:SetNetworkedEntity("mount",pl)
 	self:SetNetworkedBool("mounted",true)
 	self.m_bMounted = true
-	self.m_turnSpeed = 0
+	self.m_turnSpeed = 6
 	self.m_tMounted = CurTime()
 	pl:SetNetworkedEntity("mount",self)
 	//pl:Spectate(OBS_MODE_CHASE)
